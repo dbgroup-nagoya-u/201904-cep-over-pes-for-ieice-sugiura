@@ -11,17 +11,7 @@ import javax.annotation.Nonnull;
 /**
  * NFA
  */
-public class Nfa {
-
-  public static final String EPSILON = "EPSILON";
-
-  public static final String REJECT = "REJECT";
-
-  private Set<Integer> states;
-
-  public static final int INITIALSTATE = 0;
-
-  private Set<Integer> finalStates;
+public class Nfa extends Automaton {
 
   private Map<Integer, Map<String, Set<Integer>>> tranFunc;
 
@@ -42,11 +32,6 @@ public class Nfa {
     this.finalStates = Collections.unmodifiableSet(builder.finalStates);
   }
 
-  @Nonnull
-  public Set<Integer> getStates() {
-    return this.states;
-  }
-
   /**
    * 指定された状態・イベントシンボルに対応する遷移先を返す．ただし，状態が存在しない場合は例外を返す．
    *
@@ -57,22 +42,27 @@ public class Nfa {
   @Nonnull
   public Set<Integer> getNextStates(int stateId, String eventSymbol) {
     this.rangeCheckForGet(stateId);
-    return this.tranFunc.get(stateId).getOrDefault(eventSymbol, Collections.emptySet());
-  }
 
-  @Nonnull
-  public boolean isFinalState(int stateId) {
-    return this.finalStates.contains(stateId);
-  }
+    Map<String, Set<Integer>> transitions = this.tranFunc.get(stateId);
+    Set<Integer> nextIds = new HashSet<>();
+    if (transitions.containsKey(eventSymbol)) {
+      nextIds.addAll(this.tranFunc.get(stateId).get(eventSymbol));
+    }
+    if (transitions.containsKey(WILDCARD)) {
+      nextIds.addAll(this.tranFunc.get(stateId).get(WILDCARD));
+    }
 
-  private void rangeCheckForGet(int stateId) {
-    if (!this.states.contains(stateId)) {
-      throw new IndexOutOfBoundsException(this.outOfBoundsMsg(stateId));
+    if (nextIds.isEmpty()) {
+      return transitions.get(REJECT);
+    } else {
+      return nextIds;
     }
   }
 
-  private String outOfBoundsMsg(int stateId) {
-    return "Index: " + stateId + ", States: " + this.states.toString();
+  @Nonnull
+  public Set<String> getEventSymbols(int stateId) {
+    this.rangeCheckForGet(stateId);
+    return this.tranFunc.get(stateId).keySet();
   }
 
   public static class Builder {
@@ -153,9 +143,12 @@ public class Nfa {
     private Builder addTransitionsForReject() {
       this.states.forEach(stateId -> {
         this.tranFunc.putIfAbsent(stateId, new HashMap<>());
-        Set<Integer> rejectIds = new HashSet<>();
-        rejectIds.add(REJECTSTATE);
-        this.tranFunc.get(stateId).put(REJECT, rejectIds);
+        if (!this.tranFunc.get(stateId).containsKey(WILDCARD)//
+            && !this.tranFunc.get(stateId).containsKey(REJECT)) {
+          Set<Integer> rejectIds = new HashSet<>();
+          rejectIds.add(REJECTSTATE);
+          this.tranFunc.get(stateId).put(REJECT, rejectIds);
+        }
       });
       return this;
     }
@@ -216,6 +209,7 @@ public class Nfa {
       unReachableIds.removeAll(reachableIds);
       this.states.removeAll(unReachableIds);
       unReachableIds.forEach(id -> this.tranFunc.remove(id));
+      this.finalStates.removeAll(unReachableIds);
       return this;
     }
   }

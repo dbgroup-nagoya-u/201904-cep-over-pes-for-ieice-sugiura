@@ -4,12 +4,12 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 
+import static pds.cep.Automaton.WILDCARD;
+
 /**
  * Event
  */
 class Event {
-
-  public static final String WILDCARD = ".";
 
   public final int timestamp;
 
