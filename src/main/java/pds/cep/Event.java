@@ -9,6 +9,8 @@ import java.util.Objects;
  */
 class Event {
 
+  public static final String WILDCARD = ".";
+
   public final int timestamp;
 
   private Map<String, Double> probs;
@@ -20,14 +22,14 @@ class Event {
   }
 
   public boolean hasSymbol(String symbol) {
-    if (symbol.equals("."))
+    if (symbol.equals(WILDCARD))
       return true;
     else
       return this.probs.keySet().contains(symbol);
   }
 
   public double getProb(String symbol) {
-    if (symbol.equals("."))
+    if (symbol.equals(WILDCARD))
       return 1;
     else
       return this.probs.getOrDefault(symbol, 0.0);
