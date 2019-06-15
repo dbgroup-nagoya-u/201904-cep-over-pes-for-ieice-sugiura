@@ -18,7 +18,7 @@ class SparseRightMatrix extends SparseMatrix {
   }
 
   @Override
-  public void add(int row, int column, double value) {
+  public void set(int row, int column, double value) {
     this.rangeCheckForAddGet(row, column);
     if (Double.compare(value, 0.0) == 0) {
       return;

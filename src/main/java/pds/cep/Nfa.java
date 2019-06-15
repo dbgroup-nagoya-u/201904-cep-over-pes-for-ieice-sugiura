@@ -1,5 +1,7 @@
 package pds.cep;
 
+import static pds.cep.Constants.*;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,7 +13,7 @@ import javax.annotation.Nonnull;
 /**
  * NFA
  */
-public class Nfa extends Automaton {
+class Nfa extends Automaton {
 
   private Map<Integer, Map<String, Set<Integer>>> tranFunc;
 
@@ -66,6 +68,7 @@ public class Nfa extends Automaton {
   }
 
   public static class Builder {
+    private int initialState;
     private Set<Integer> states;
     private Map<Integer, Map<String, Set<Integer>>> tranFunc;
     private Set<Integer> finalStates;
@@ -73,7 +76,6 @@ public class Nfa extends Automaton {
 
     public Builder() {
       this.states = new HashSet<>();
-      this.states.add(INITIALSTATE);
       this.states.add(REJECTSTATE);
       this.tranFunc = new HashMap<>();
       this.finalStates = new HashSet<>();
@@ -85,6 +87,7 @@ public class Nfa extends Automaton {
      * @param origin
      */
     public Builder(Nfa origin) {
+      this.initialState = origin.initialState;
       this.states = new HashSet<>(origin.states);
       this.tranFunc = new HashMap<>();
       for (var state : origin.tranFunc.keySet()) {
@@ -106,6 +109,11 @@ public class Nfa extends Automaton {
       this.removeEpsilonTransitions();
       this.removeUnreachableState();
       return new Nfa(this);
+    }
+
+    public Builder setInitialState(int stateId) {
+      this.initialState = stateId;
+      return this;
     }
 
     /**
@@ -194,7 +202,7 @@ public class Nfa extends Automaton {
     private Builder removeUnreachableState() {
       // 初期状態から到達可能な状態を列挙する
       Set<Integer> reachableIds = new HashSet<>();
-      boolean modified = reachableIds.add(INITIALSTATE);
+      boolean modified = reachableIds.add(this.initialState);
       while (modified) {
         modified = false;
         Set<Integer> currentIds = new HashSet<>(reachableIds);

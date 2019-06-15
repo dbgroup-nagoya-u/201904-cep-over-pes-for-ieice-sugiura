@@ -1,5 +1,7 @@
 package pds.cep;
 
+import static pds.cep.Constants.*;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,7 +13,7 @@ import javax.annotation.Nonnull;
 /**
  * Dfa
  */
-public class Dfa extends Automaton {
+class Dfa extends Automaton {
 
   private Map<Integer, Map<String, Integer>> tranFunc;
 
@@ -42,7 +44,42 @@ public class Dfa extends Automaton {
     }
   }
 
+  /**
+   * 与えられたイベント及び DFA の遷移に基づいて，与えられた行列に遷移確率を設定する．
+   *
+   * @param matrix
+   * @param e
+   */
+  public void genTransitionMatrix(SparseMatrix matrix, Event e) {
+    matrix.clear();
+    for (int row : this.states) {
+      double rejectProb = 1.0;
+      for (var entry : this.tranFunc.get(row).entrySet()) {
+        String eventSymbol = entry.getKey();
+        int column = entry.getValue();
+
+        if (eventSymbol.equals(REJECT))
+          continue;
+
+        double prob = e.getProb(eventSymbol);
+        rejectProb -= prob;
+        prob += matrix.get(row, column);
+        matrix.set(row, column, prob);
+      }
+      matrix.set(row, this.tranFunc.get(row).get(REJECT), rejectProb);
+    }
+  }
+
+  public double sumAcceptProb(SparseMatrix probVector) {
+    double sum = 0.0;
+    for (int finalId : this.finalStates) {
+      sum += probVector.get(0, finalId);
+    }
+    return sum;
+  }
+
   public static class Builder {
+    private int initialState;
     private Set<Integer> states;
     private Map<Integer, Map<String, Integer>> tranFunc;
     private Set<Integer> finalStates;
@@ -52,18 +89,19 @@ public class Dfa extends Automaton {
 
     public Builder subsetConstruction(Nfa nfa) {
       // 初期化
+      this.initialState = 0;
       this.states = new HashSet<>();
-      this.states.add(INITIALSTATE);
+      this.states.add(this.initialState);
       this.finalStates = new HashSet<>();
       this.tranFunc = new HashMap<>();
 
       // 部分集合から状態番号への写像
       Map<Set<Integer>, Integer> subset2Id = new HashMap<>();
-      subset2Id.put(Set.of(INITIALSTATE), INITIALSTATE);
+      subset2Id.put(Set.of(nfa.initialState), this.initialState);
 
       // 到達可能な全ての部分集合を走査
       Set<Set<Integer>> unCheckedSubsets = new HashSet<>();
-      unCheckedSubsets.add(Set.of(INITIALSTATE));
+      unCheckedSubsets.add(Set.of(nfa.initialState));
       while (!unCheckedSubsets.isEmpty()) {
         Set<Set<Integer>> currentSubsets = new HashSet<>(unCheckedSubsets);
         unCheckedSubsets.clear();
@@ -142,8 +180,8 @@ public class Dfa extends Automaton {
       Map<Set<Integer>, Integer> subset2Id = new HashMap<>();
       int count = 1;
       for (Set<Integer> subset : subsets) {
-        if (subset.contains(INITIALSTATE)) {
-          subset2Id.put(subset, INITIALSTATE);
+        if (subset.contains(this.initialState)) {
+          subset2Id.put(subset, this.initialState);
         } else {
           subset2Id.put(subset, count++);
         }
@@ -176,7 +214,7 @@ public class Dfa extends Automaton {
 
     /**
      * 穴埋めアルゴリズムにより状態の等価性を示す filling table を作成する．
-     * 
+     *
      * @return
      */
     private Map<Integer, Map<Integer, Boolean>> genFillingTable() {
@@ -228,7 +266,7 @@ public class Dfa extends Automaton {
     private Builder removeUnreachableState() {
       // 初期状態から到達可能な状態を列挙する
       Set<Integer> reachableIds = new HashSet<>();
-      boolean modified = reachableIds.add(INITIALSTATE);
+      boolean modified = reachableIds.add(this.initialState);
       while (modified) {
         modified = false;
         Set<Integer> currentIds = new HashSet<>(reachableIds);
@@ -248,12 +286,54 @@ public class Dfa extends Automaton {
     }
 
     /**
+     * 状態の ID を 0 から state.size()-1 に正規化する．
+     *
+     * @return
+     */
+    private Builder normalize() {
+      // 正規化用の写像を作成
+      Map<Integer, Integer> state2state = new HashMap<>();
+      state2state.put(this.initialState, 0);
+      int count = 1;
+      for (int stateId : this.states) {
+        if (stateId == this.initialState)
+          continue;
+        state2state.put(stateId, count++);
+      }
+
+      // 正規化した状態集合を作成
+      Set<Integer> tempStates = new HashSet<>();
+      this.states.forEach(stateId -> tempStates.add(state2state.get(stateId)));
+      Set<Integer> tempFinalStates = new HashSet<>();
+      this.finalStates.forEach(stateId -> tempFinalStates.add(state2state.get(stateId)));
+
+      // 正規化した遷移関数を作成
+      Map<Integer, Map<String, Integer>> tempTranFunc = new HashMap<>();
+      this.tranFunc.forEach((startId, transitions) -> {
+        final int newStartId = state2state.get(startId);
+        tempTranFunc.putIfAbsent(newStartId, new HashMap<>());
+        transitions.forEach((eventSymbol, endId) -> {
+          tempTranFunc.get(newStartId).put(eventSymbol, state2state.get(endId));
+        });
+      });
+
+      // DFA を正規化したものに更新
+      this.initialState = state2state.get(this.initialState);
+      this.states = tempStates;
+      this.tranFunc = tempTranFunc;
+      this.finalStates = tempFinalStates;
+
+      return this;
+    }
+
+    /**
      * DFA を構築する．
      *
      * @return
      */
     public Dfa build() {
       this.removeUnreachableState();
+      this.normalize();
       return new Dfa(this);
     }
 

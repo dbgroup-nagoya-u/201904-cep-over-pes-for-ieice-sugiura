@@ -1,19 +1,19 @@
 package pds.cep;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static pds.cep.Automaton.WILDCARD;
-import static pds.cep.Automaton.EPSILON;
+import static pds.cep.Constants.*;
 
 import org.junit.jupiter.api.Test;
 
 /**
  * testNfa
  */
-class TestNfa {
+class NfaTest {
 
   @Test
   public void testBuildNfa() {
     Nfa nfa = new Nfa.Builder()//
+        .setInitialState(0)//
         .addTransition(0, 1, EPSILON)//
         .addTransition(1, 2, "a")//
         .addTransition(2, 2, WILDCARD)//

@@ -19,7 +19,7 @@ class SparseLeftMatrix extends SparseMatrix {
   }
 
   @Override
-  public void add(int row, int column, double value) {
+  public void set(int row, int column, double value) {
     this.rangeCheckForAddGet(row, column);
     if (Double.compare(value, 0.0) == 0) {
       return;
@@ -43,9 +43,8 @@ class SparseLeftMatrix extends SparseMatrix {
    * 疎行列同士の積を計算する．ただし，実装は naive な手法を使用している．
    *
    * @param rightMatrix
-   * @return このインスタンスを左行列，引数を右行列とした際の行列の積の結果
    */
-  public SparseLeftMatrix product(SparseRightMatrix rightMatrix) {
+  public void product(SparseRightMatrix rightMatrix) {
     this.rangeCheckForProduct(rightMatrix);
 
     SparseLeftMatrix product = new SparseLeftMatrix(this.rowSize, rightMatrix.colmunSize);
@@ -62,10 +61,12 @@ class SparseLeftMatrix extends SparseMatrix {
         }
         int row = leftEntry.getKey();
         int column = rightEntry.getKey();
-        product.add(row, column, sum);
+        product.set(row, column, sum);
       }
     }
 
-    return product;
+    this.rowSize = product.rowSize;
+    this.colmunSize = product.colmunSize;
+    this.matrix = product.matrix;
   }
 }

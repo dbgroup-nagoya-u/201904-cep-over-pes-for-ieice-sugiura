@@ -7,19 +7,18 @@ import javax.annotation.Nonnull;
 /**
  * Automaton
  */
-public abstract class Automaton {
+abstract class Automaton {
 
-  public static final String EPSILON = "EPSILON";
-
-  public static final String REJECT = "REJECT";
-
-  public static final String WILDCARD = "WILDCARD";
-
-  public static final int INITIALSTATE = 0;
+  protected int initialState;
 
   protected Set<Integer> states;
 
   protected Set<Integer> finalStates;
+
+  @Nonnull
+  public int getInitialState() {
+    return this.initialState;
+  }
 
   @Nonnull
   public Set<Integer> getStates() {
@@ -34,6 +33,11 @@ public abstract class Automaton {
   @Nonnull
   public Set<Integer> getFinalStates() {
     return this.finalStates;
+  }
+
+  @Nonnull
+  public int size() {
+    return this.states.size();
   }
 
   protected void rangeCheckForGet(int stateId) {

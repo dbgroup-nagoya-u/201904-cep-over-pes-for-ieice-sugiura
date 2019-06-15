@@ -1,6 +1,5 @@
 package pds.cep;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,16 +9,11 @@ import java.util.stream.Collectors;
 /**
  * Stream
  */
-public class SimulationStream implements Stream {
-
-  private List<Event> stream;
-
-  private int offset;
+public class SimulationStream extends Stream {
 
   public SimulationStream(int streamSize, int eventSymbolSize) {
-    this.stream = new ArrayList<>(streamSize);
+    super(streamSize);
     this.genSimulationStream(streamSize, eventSymbolSize);
-    this.resetOffset();
   }
 
   /**
@@ -40,22 +34,5 @@ public class SimulationStream implements Stream {
       }
       this.stream.add(new Event(i, probDist));
     }
-    ;
   }
-
-  @Override
-  public Event pull() {
-    return this.stream.get(offset++);
-  }
-
-  @Override
-  public void resetOffset() {
-    this.offset = 0;
-  }
-
-  @Override
-  public boolean hasNext() {
-    return this.offset < this.stream.size();
-  }
-
 }

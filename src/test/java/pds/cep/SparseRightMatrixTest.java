@@ -14,13 +14,13 @@ class SparseRightMatrixTest {
   public void testIndexOutOfBoundsException() {
     SparseMatrix classUnderTest = new SparseRightMatrix(4, 4);
 
-    Throwable exception = assertThrows(IndexOutOfBoundsException.class, () -> classUnderTest.add(-1, 0, 1.0));
+    Throwable exception = assertThrows(IndexOutOfBoundsException.class, () -> classUnderTest.set(-1, 0, 1.0));
     assertEquals("Index: (-1, 0), Size: 4 x 4", exception.getMessage());
-    exception = assertThrows(IndexOutOfBoundsException.class, () -> classUnderTest.add(0, -1, 1.0));
+    exception = assertThrows(IndexOutOfBoundsException.class, () -> classUnderTest.set(0, -1, 1.0));
     assertEquals("Index: (0, -1), Size: 4 x 4", exception.getMessage());
-    exception = assertThrows(IndexOutOfBoundsException.class, () -> classUnderTest.add(4, 3, 1.0));
+    exception = assertThrows(IndexOutOfBoundsException.class, () -> classUnderTest.set(4, 3, 1.0));
     assertEquals("Index: (4, 3), Size: 4 x 4", exception.getMessage());
-    exception = assertThrows(IndexOutOfBoundsException.class, () -> classUnderTest.add(3, 4, 1.0));
+    exception = assertThrows(IndexOutOfBoundsException.class, () -> classUnderTest.set(3, 4, 1.0));
     assertEquals("Index: (3, 4), Size: 4 x 4", exception.getMessage());
 
     exception = assertThrows(IndexOutOfBoundsException.class, () -> classUnderTest.get(-1, 0));
@@ -37,10 +37,10 @@ class SparseRightMatrixTest {
   public void testSetterGetter() {
     SparseMatrix classUnderTest = new SparseRightMatrix(4, 4);
 
-    classUnderTest.add(0, 0, 1.0);
-    classUnderTest.add(0, 3, 2.0);
-    classUnderTest.add(3, 0, 3.0);
-    classUnderTest.add(3, 3, 4.0);
+    classUnderTest.set(0, 0, 1.0);
+    classUnderTest.set(0, 3, 2.0);
+    classUnderTest.set(3, 0, 3.0);
+    classUnderTest.set(3, 3, 4.0);
 
     assertEquals(1.0, classUnderTest.get(0, 0));
     assertEquals(2.0, classUnderTest.get(0, 3));

@@ -8,8 +8,11 @@ import java.util.HashMap;
  */
 abstract class SparseMatrix {
 
-  public final int rowSize;
-  public final int colmunSize;
+  protected int rowSize;
+
+  protected int colmunSize;
+
+  /** 行列本体．行指向か列指向かは継承クラスに依存． */
   protected Map<Integer, Map<Integer, Double>> matrix;
 
   /**
@@ -24,9 +27,13 @@ abstract class SparseMatrix {
     this.matrix = new HashMap<>();
   }
 
-  abstract public void add(int row, int column, double value);
+  abstract public void set(int row, int column, double value);
 
   abstract public double get(int row, int column);
+
+  public void clear() {
+    this.matrix.clear();
+  };
 
   protected void rangeCheckForAddGet(int row, int column) {
     if (row < 0 || row >= this.rowSize || column < 0 || column >= this.colmunSize) {

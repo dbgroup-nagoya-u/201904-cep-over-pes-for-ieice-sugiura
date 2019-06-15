@@ -16,13 +16,13 @@ class SparseLeftMatrixTest {
   public void testIndexOutOfBoundsException() {
     SparseMatrix classUnderTest = new SparseLeftMatrix(4, 4);
 
-    Throwable exception = assertThrows(IndexOutOfBoundsException.class, () -> classUnderTest.add(-1, 0, 1.0));
+    Throwable exception = assertThrows(IndexOutOfBoundsException.class, () -> classUnderTest.set(-1, 0, 1.0));
     assertEquals("Index: (-1, 0), Size: 4 x 4", exception.getMessage());
-    exception = assertThrows(IndexOutOfBoundsException.class, () -> classUnderTest.add(0, -1, 1.0));
+    exception = assertThrows(IndexOutOfBoundsException.class, () -> classUnderTest.set(0, -1, 1.0));
     assertEquals("Index: (0, -1), Size: 4 x 4", exception.getMessage());
-    exception = assertThrows(IndexOutOfBoundsException.class, () -> classUnderTest.add(4, 3, 1.0));
+    exception = assertThrows(IndexOutOfBoundsException.class, () -> classUnderTest.set(4, 3, 1.0));
     assertEquals("Index: (4, 3), Size: 4 x 4", exception.getMessage());
-    exception = assertThrows(IndexOutOfBoundsException.class, () -> classUnderTest.add(3, 4, 1.0));
+    exception = assertThrows(IndexOutOfBoundsException.class, () -> classUnderTest.set(3, 4, 1.0));
     assertEquals("Index: (3, 4), Size: 4 x 4", exception.getMessage());
 
     exception = assertThrows(IndexOutOfBoundsException.class, () -> classUnderTest.get(-1, 0));
@@ -39,10 +39,10 @@ class SparseLeftMatrixTest {
   public void testSetterGetter() {
     SparseMatrix classUnderTest = new SparseLeftMatrix(4, 4);
 
-    classUnderTest.add(0, 0, 1.0);
-    classUnderTest.add(0, 3, 2.0);
-    classUnderTest.add(3, 0, 3.0);
-    classUnderTest.add(3, 3, 4.0);
+    classUnderTest.set(0, 0, 1.0);
+    classUnderTest.set(0, 3, 2.0);
+    classUnderTest.set(3, 0, 3.0);
+    classUnderTest.set(3, 3, 4.0);
 
     assertEquals(1.0, classUnderTest.get(0, 0));
     assertEquals(2.0, classUnderTest.get(0, 3));
@@ -72,20 +72,20 @@ class SparseLeftMatrixTest {
     SparseLeftMatrix leftMatrix = new SparseLeftMatrix(4, 3);
     for (int i = 0; i < 4; i++) {
       for (int j = 0; j < 3; j++) {
-        leftMatrix.add(i, j, leftArrays[i][j]);
+        leftMatrix.set(i, j, leftArrays[i][j]);
       }
     }
     SparseRightMatrix rightMatrix = new SparseRightMatrix(3, 4);
     for (int i = 0; i < 3; i++) {
       for (int j = 0; j < 4; j++) {
-        rightMatrix.add(i, j, rightArrays[i][j]);
+        rightMatrix.set(i, j, rightArrays[i][j]);
       }
     }
-    SparseMatrix productMatrix = leftMatrix.product(rightMatrix);
+    leftMatrix.product(rightMatrix);
 
     IntStream.range(0, 4).forEach(i -> {
       IntStream.range(0, 4).forEach(j -> {
-        assertEquals(productArrays[i][j], productMatrix.get(i, j));
+        assertEquals(productArrays[i][j], leftMatrix.get(i, j));
       });
     });
   }

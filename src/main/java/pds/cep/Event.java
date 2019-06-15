@@ -1,17 +1,17 @@
 package pds.cep;
 
+import static pds.cep.Constants.*;
+
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
-
-import static pds.cep.Automaton.WILDCARD;
 
 /**
  * Event
  */
 class Event {
 
-  public final int timestamp;
+  private int timestamp;
 
   private Map<String, Double> probs;
 
@@ -33,6 +33,10 @@ class Event {
       return 1;
     else
       return this.probs.getOrDefault(symbol, 0.0);
+  }
+
+  public int getTimeStamp() {
+    return this.timestamp;
   }
 
   @Override
