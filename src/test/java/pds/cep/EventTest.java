@@ -1,6 +1,7 @@
 package pds.cep;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static pds.cep.Constants.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +20,7 @@ class EventTest {
     assertEquals(0.5, e.getProb("b"));
     assertEquals(0.2, e.getProb("c"));
     assertEquals(0.0, e.getProb("d"));
-    assertEquals(1.0, e.getProb("."));
+    assertEquals(1.0, e.getProb(WILDCARD));
   }
 
   @Test
@@ -29,7 +30,7 @@ class EventTest {
     assertEquals(true, e.hasSymbol("b"));
     assertEquals(true, e.hasSymbol("c"));
     assertEquals(false, e.hasSymbol("d"));
-    assertEquals(true, e.hasSymbol("."));
+    assertEquals(true, e.hasSymbol(WILDCARD));
   }
 
   private Event generateTestEvent() {

@@ -34,3 +34,10 @@ application {
     // Define the main class for the application
     mainClassName = "pds.experiment.MeasureRuntime"
 }
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
+}
