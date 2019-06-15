@@ -13,7 +13,7 @@ import javax.annotation.Nonnull;
 /**
  * Dfa
  */
-class Dfa extends Automaton {
+public class Dfa extends Automaton {
 
   private Map<Integer, Map<String, Integer>> tranFunc;
 
@@ -51,7 +51,7 @@ class Dfa extends Automaton {
    * @param e
    */
   public void genTransitionMatrix(SparseMatrix matrix, Event e) {
-    matrix.clear();
+    matrix.initialize(this.size(), this.size());
     for (int row : this.states) {
       double rejectProb = 1.0;
       for (var entry : this.tranFunc.get(row).entrySet()) {
@@ -62,9 +62,8 @@ class Dfa extends Automaton {
           continue;
 
         double prob = e.getProb(eventSymbol);
+        matrix.add(row, column, prob);
         rejectProb -= prob;
-        prob += matrix.get(row, column);
-        matrix.set(row, column, prob);
       }
       matrix.set(row, this.tranFunc.get(row).get(REJECT), rejectProb);
     }

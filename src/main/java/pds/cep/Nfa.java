@@ -13,7 +13,7 @@ import javax.annotation.Nonnull;
 /**
  * NFA
  */
-class Nfa extends Automaton {
+public class Nfa extends Automaton {
 
   private Map<Integer, Map<String, Set<Integer>>> tranFunc;
 

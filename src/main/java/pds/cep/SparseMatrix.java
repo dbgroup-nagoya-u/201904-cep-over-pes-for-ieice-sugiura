@@ -27,13 +27,21 @@ abstract class SparseMatrix {
     this.matrix = new HashMap<>();
   }
 
+  abstract public void add(int row, int column, double value);
+
   abstract public void set(int row, int column, double value);
 
   abstract public double get(int row, int column);
 
-  public void clear() {
+  public void initialize() {
     this.matrix.clear();
   };
+
+  public void initialize(int rowSize, int columnSize) {
+    this.rowSize = rowSize;
+    this.colmunSize = columnSize;
+    this.initialize();
+  }
 
   protected void rangeCheckForAddGet(int row, int column) {
     if (row < 0 || row >= this.rowSize || column < 0 || column >= this.colmunSize) {

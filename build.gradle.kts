@@ -32,5 +32,5 @@ dependencies {
 
 application {
     // Define the main class for the application
-    mainClassName = "pds.cep.App"
+    mainClassName = "pds.experiment.MeasureRuntime"
 }

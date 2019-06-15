@@ -11,4 +11,5 @@ public class Constants {
 
   public static final String WILDCARD = "WILDCARD";
 
+  public static boolean outputEnabled = true;
 }

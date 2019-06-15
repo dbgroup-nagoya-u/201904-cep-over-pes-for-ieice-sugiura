@@ -8,6 +8,8 @@ import java.util.Map;
  */
 class SparseLeftMatrix extends SparseMatrix {
 
+  private static final SparseLeftMatrix tempMatrix = new SparseLeftMatrix(0, 0);
+
   /**
    * Default constructor.
    *
@@ -30,6 +32,17 @@ class SparseLeftMatrix extends SparseMatrix {
   }
 
   @Override
+  public void add(int row, int column, double value) {
+    this.rangeCheckForAddGet(row, column);
+    if (Double.compare(value, 0.0) == 0) {
+      return;
+    }
+
+    this.matrix.putIfAbsent(row, new HashMap<>());
+    this.matrix.get(row).merge(column, value, (v1, v2) -> v1 + v2);
+  }
+
+  @Override
   public double get(int row, int column) {
     this.rangeCheckForAddGet(row, column);
     if (this.matrix.containsKey(row)) {
@@ -47,7 +60,7 @@ class SparseLeftMatrix extends SparseMatrix {
   public void product(SparseRightMatrix rightMatrix) {
     this.rangeCheckForProduct(rightMatrix);
 
-    SparseLeftMatrix product = new SparseLeftMatrix(this.rowSize, rightMatrix.colmunSize);
+    tempMatrix.initialize(this.rowSize, rightMatrix.colmunSize);
 
     for (Map.Entry<Integer, Map<Integer, Double>> leftEntry : this.matrix.entrySet()) {
       Map<Integer, Double> verticalVec = leftEntry.getValue();
@@ -61,12 +74,14 @@ class SparseLeftMatrix extends SparseMatrix {
         }
         int row = leftEntry.getKey();
         int column = rightEntry.getKey();
-        product.set(row, column, sum);
+        tempMatrix.set(row, column, sum);
       }
     }
 
-    this.rowSize = product.rowSize;
-    this.colmunSize = product.colmunSize;
-    this.matrix = product.matrix;
+    this.rowSize = tempMatrix.rowSize;
+    this.colmunSize = tempMatrix.colmunSize;
+    var tempMap = this.matrix;
+    this.matrix = tempMatrix.matrix;
+    tempMatrix.matrix = tempMap;
   }
 }

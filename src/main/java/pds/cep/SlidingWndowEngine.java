@@ -24,6 +24,8 @@ public class SlidingWndowEngine {
   /** 処理したイベント数を数える．処理結果を出力するたびに更新． */
   private int countForOutput;
 
+  private static final SparseRightMatrix tranMatrix = new SparseRightMatrix(0, 0);
+
   public SlidingWndowEngine(Stream stream, Dfa dfa, int windowSize, int slidingSize) {
     this.stream = stream;
     this.dfa = dfa;
@@ -47,16 +49,17 @@ public class SlidingWndowEngine {
       }
 
       // 遷移確率行列を用意し，各時間窓の確率ベクトルを更新
-      SparseRightMatrix tranMatrix = new SparseRightMatrix(this.dfa.size(), this.dfa.size());
       this.dfa.genTransitionMatrix(tranMatrix, e);
       this.windowedProbVectors.forEach(vec -> vec.product(tranMatrix));
 
       // 時間窓内のイベントが全て処理されたなら出力
       if (++this.countForOutput > this.windowSize) {
         SparseLeftMatrix resultVec = this.windowedProbVectors.poll();
-        String output = this.genWindowStr(e.getTimeStamp()) + ": "
-            + String.format("%.5f", this.dfa.sumAcceptProb(resultVec)) + "\n";
-        System.out.print(output);
+        if (Constants.outputEnabled) {
+          String output = this.genWindowStr(e.getTimeStamp()) + ": "
+              + String.format("%.5f", this.dfa.sumAcceptProb(resultVec)) + "\n";
+          System.out.print(output);
+        }
         this.countForOutput -= this.slidingSize;
       }
     }

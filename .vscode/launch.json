@@ -6,6 +6,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "CodeLens (Launch) - MeasureRuntime",
+      "request": "launch",
+      "mainClass": "pds.experiment.MeasureRuntime",
+      "projectName": "20190619_IEICE"
+    },
+    {
+      "type": "java",
       "name": "Debug (Launch) - Current File",
       "request": "launch",
       "mainClass": "${file}"
