@@ -41,3 +41,9 @@ tasks.withType<Test> {
         events("passed", "skipped", "failed")
     }
 }
+
+tasks.withType<Jar> {
+    manifest {
+        attributes(mapOf("Main-Class" to application.mainClassName))
+    }
+}

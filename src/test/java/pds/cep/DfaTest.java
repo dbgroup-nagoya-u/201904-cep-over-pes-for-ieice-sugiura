@@ -25,10 +25,10 @@ class DfaTest {
   @Test
   public void testProbCalculation() {
     Dfa dfa = this.genSampleDfa(this.genSampleNfa());
-    SparseMatrix matrix = new SparseRightMatrix(4, 4);
     Event e = this.genSampleEvent();
-
+    SparseColumnMatrix matrix = new SparseColumnMatrix(dfa.size(), dfa.size());
     dfa.genTransitionMatrix(matrix, e);
+
     assertEquals(0, matrix.get(0, 0), 1E-5);
     assertEquals(0.3, matrix.get(0, 1), 1E-5);
     assertEquals(0.7, matrix.get(0, 2), 1E-5);

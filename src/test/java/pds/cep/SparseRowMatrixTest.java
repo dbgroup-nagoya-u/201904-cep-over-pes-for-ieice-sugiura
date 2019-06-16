@@ -10,11 +10,11 @@ import org.junit.jupiter.api.Test;
 /**
  * SparseMatrixTest
  */
-class SparseLeftMatrixTest {
+class SparseRowMatrixTest {
 
   @Test
   public void testIndexOutOfBoundsException() {
-    SparseMatrix classUnderTest = new SparseLeftMatrix(4, 4);
+    SparseMatrix classUnderTest = new SparseRowMatrix(4, 4);
 
     Throwable exception = assertThrows(IndexOutOfBoundsException.class, () -> classUnderTest.set(-1, 0, 1.0));
     assertEquals("Index: (-1, 0), Size: 4 x 4", exception.getMessage());
@@ -37,7 +37,7 @@ class SparseLeftMatrixTest {
 
   @Test
   public void testSetterGetter() {
-    SparseMatrix classUnderTest = new SparseLeftMatrix(4, 4);
+    SparseMatrix classUnderTest = new SparseRowMatrix(4, 4);
 
     classUnderTest.set(0, 0, 1.0);
     classUnderTest.set(0, 3, 2.0);
@@ -69,31 +69,31 @@ class SparseLeftMatrixTest {
       }
     }
 
-    SparseLeftMatrix leftMatrix = new SparseLeftMatrix(4, 3);
+    SparseRowMatrix leftMatrix = new SparseRowMatrix(4, 3);
     for (int i = 0; i < 4; i++) {
       for (int j = 0; j < 3; j++) {
         leftMatrix.set(i, j, leftArrays[i][j]);
       }
     }
-    SparseRightMatrix rightMatrix = new SparseRightMatrix(3, 4);
+    SparseColumnMatrix rightMatrix = new SparseColumnMatrix(3, 4);
     for (int i = 0; i < 3; i++) {
       for (int j = 0; j < 4; j++) {
         rightMatrix.set(i, j, rightArrays[i][j]);
       }
     }
-    leftMatrix.product(rightMatrix);
+    SparseRowMatrix productMat = leftMatrix.product(rightMatrix);
 
     IntStream.range(0, 4).forEach(i -> {
       IntStream.range(0, 4).forEach(j -> {
-        assertEquals(productArrays[i][j], leftMatrix.get(i, j));
+        assertEquals(productArrays[i][j], productMat.get(i, j));
       });
     });
   }
 
   @Test
   public void testMismatchingMatricesForProduct() {
-    SparseLeftMatrix leftMatrix = new SparseLeftMatrix(4, 3);
-    SparseRightMatrix rightMatrix = new SparseRightMatrix(4, 4);
+    SparseRowMatrix leftMatrix = new SparseRowMatrix(4, 3);
+    SparseColumnMatrix rightMatrix = new SparseColumnMatrix(4, 4);
     Throwable exception = assertThrows(IllegalArgumentException.class, () -> leftMatrix.product(rightMatrix));
     assertEquals("Left matrix: 4 x 3, Right matrix: 4 x 4", exception.getMessage());
   }

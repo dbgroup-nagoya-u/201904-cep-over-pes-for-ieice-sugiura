@@ -51,7 +51,6 @@ public class Dfa extends Automaton {
    * @param e
    */
   public void genTransitionMatrix(SparseMatrix matrix, Event e) {
-    matrix.initialize(this.size(), this.size());
     for (int row : this.states) {
       double rejectProb = 1.0;
       for (var entry : this.tranFunc.get(row).entrySet()) {
@@ -69,10 +68,10 @@ public class Dfa extends Automaton {
     }
   }
 
-  public double sumAcceptProb(SparseMatrix probVector) {
+  public double sumAcceptProb(SparseVector probVector) {
     double sum = 0.0;
     for (int finalId : this.finalStates) {
-      sum += probVector.get(0, finalId);
+      sum += probVector.get(finalId);
     }
     return sum;
   }

@@ -8,11 +8,11 @@ import org.junit.jupiter.api.Test;
 /**
  * SparseMatrixTest
  */
-class SparseRightMatrixTest {
+class SparseColumnMatrixTest {
 
   @Test
   public void testIndexOutOfBoundsException() {
-    SparseMatrix classUnderTest = new SparseRightMatrix(4, 4);
+    SparseMatrix classUnderTest = new SparseColumnMatrix(4, 4);
 
     Throwable exception = assertThrows(IndexOutOfBoundsException.class, () -> classUnderTest.set(-1, 0, 1.0));
     assertEquals("Index: (-1, 0), Size: 4 x 4", exception.getMessage());
@@ -35,7 +35,7 @@ class SparseRightMatrixTest {
 
   @Test
   public void testSetterGetter() {
-    SparseMatrix classUnderTest = new SparseRightMatrix(4, 4);
+    SparseMatrix classUnderTest = new SparseColumnMatrix(4, 4);
 
     classUnderTest.set(0, 0, 1.0);
     classUnderTest.set(0, 3, 2.0);
